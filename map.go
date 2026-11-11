@@ -241,17 +241,8 @@ func (m Map[K, V]) Subtract(other Map[K, V]) Map[K, V] {
 
 // -- Transformations. --
 
-// MapValues returns a new Map with f applied to each value, keys unchanged.
-func (m Map[K, V]) MapValues(f func(V) V) Map[K, V] {
-	out := make(map[K]V, len(m.data))
-	for k, v := range m.data {
-		out[k] = f(v)
-	}
-	return Map[K, V]{data: out}
-}
-
-// MapValuesAs returns a new Map whose values are of type W, produced by f.
-func (m Map[K, V]) MapValuesAs[W any](f func(V) W) Map[K, W] {
+// MapValues returns a new Map whose values are of type W, produced by f.
+func (m Map[K, V]) MapValues[W any](f func(V) W) Map[K, W] {
 	out := make(map[K]W, len(m.data))
 	for k, v := range m.data {
 		out[k] = f(v)

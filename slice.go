@@ -203,17 +203,8 @@ func (s Slice[T]) Reverse() Slice[T] {
 
 // -- Transformations. --
 
-// Map returns a new Slice containing f applied to each element, in order.
-func (s Slice[T]) Map(f func(T) T) Slice[T] {
-	out := make([]T, 0, len(s.data))
-	for _, v := range s.data {
-		out = append(out, f(v))
-	}
-	return Slice[T]{data: out}
-}
-
-// MapAs returns a new Slice of type U containing f applied to each element.
-func (s Slice[T]) MapAs[U any](f func(T) U) Slice[U] {
+// Map returns a new Slice of type U containing f applied to each element.
+func (s Slice[T]) Map[U any](f func(T) U) Slice[U] {
 	out := make([]U, 0, len(s.data))
 	for _, v := range s.data {
 		out = append(out, f(v))

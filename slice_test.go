@@ -98,8 +98,8 @@ func TestTransformations(t *testing.T) {
 	if got := n.Map(func(x int) int { return x * 2 }).String(); got != "[6 2 4]" {
 		t.Errorf("Map = %s", got)
 	}
-	if got := n.MapAs(func(x int) string { return string(rune('a' + x)) }).String(); got != "[d b c]" {
-		t.Errorf("MapAs = %s", got)
+	if got := n.Map(func(x int) string { return string(rune('a' + x)) }).String(); got != "[d b c]" {
+		t.Errorf("Map = %s", got)
 	}
 	if got := n.Filter(func(x int) bool { return x > 1 }).String(); got != "[3 2]" {
 		t.Errorf("Filter = %s", got)
@@ -116,7 +116,7 @@ func TestTransformations(t *testing.T) {
 	}
 	ps := NewSlice(person{"bob", 30}, person{"amy", 25}, person{"cal", 30})
 	youngest := SortBy(ps, func(v person) int { return v.age })
-	if got := youngest.MapAs(func(v person) string { return v.name }); got.String() != "[amy bob cal]" {
+	if got := youngest.Map(func(v person) string { return v.name }); got.String() != "[amy bob cal]" {
 		t.Errorf("SortBy unstable or wrong: %s", got)
 	}
 	if s := n.Sorted(func(a, b int) int { return cmp.Compare(b, a) }); s.String() != "[3 2 1]" {

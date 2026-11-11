@@ -108,8 +108,8 @@ func TestMapTransformations(t *testing.T) {
 	if got := m.MapValues(func(v int) int { return v * 2 }).String(); got != "map[a:2 b:4 c:6]" {
 		t.Errorf("MapValues = %s", got)
 	}
-	if got := m.MapValuesAs(func(v int) string { return string(rune('0' + v)) }).String(); got != "map[a:1 b:2 c:3]" {
-		t.Errorf("MapValuesAs = %s", got)
+	if got := m.MapValues(func(v int) string { return string(rune('0' + v)) }).String(); got != "map[a:1 b:2 c:3]" {
+		t.Errorf("MapValues = %s", got)
 	}
 	if got := m.Filter(func(k string, v int) bool { return k != "b" && v >= 1 }).String(); got != "map[a:1 c:3]" {
 		t.Errorf("Filter = %s", got)
