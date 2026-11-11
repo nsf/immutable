@@ -35,7 +35,7 @@ func TestMapInputOutputAliasing(t *testing.T) {
 
 func TestMapZeroValue(t *testing.T) {
 	var m Map[string, int]
-	if m.Len() != 0 || !m.IsEmpty() || m.Has("x") {
+	if m.Len() != 0 || m.Has("x") {
 		t.Errorf("zero value not empty: %v", m)
 	}
 	if _, ok := m.Get("x"); ok {
@@ -44,7 +44,7 @@ func TestMapZeroValue(t *testing.T) {
 	if got := m.Set("x", 1); !got.Has("x") {
 		t.Error("Set on zero value broken")
 	}
-	if got := m.Delete("x"); !got.IsEmpty() {
+	if got := m.Delete("x"); got.Len() != 0 {
 		t.Error("Delete on empty broken")
 	}
 }

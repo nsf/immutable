@@ -60,7 +60,7 @@ func TestSliceUnmarshalJSON(t *testing.T) {
 	if err := json.Unmarshal([]byte(`null`), &s); err != nil {
 		t.Fatal(err)
 	}
-	if !s.IsEmpty() {
+	if s.Len() != 0 {
 		t.Errorf("null should decode to empty, got %v", s)
 	}
 }
@@ -138,7 +138,7 @@ func TestMapUnmarshalJSON(t *testing.T) {
 	if err := json.Unmarshal([]byte(`null`), &m); err != nil {
 		t.Fatal(err)
 	}
-	if !m.IsEmpty() {
+	if m.Len() != 0 {
 		t.Errorf("null should decode to empty, got %v", m)
 	}
 

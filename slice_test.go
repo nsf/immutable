@@ -39,7 +39,7 @@ func TestFromSliceDoesNotAliasInput(t *testing.T) {
 
 func TestZeroValue(t *testing.T) {
 	var s Slice[int]
-	if s.Len() != 0 || !s.IsEmpty() {
+	if s.Len() != 0 {
 		t.Errorf("zero value not empty: len=%d", s.Len())
 	}
 	if _, ok := s.First(); ok {

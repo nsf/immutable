@@ -60,9 +60,6 @@ func EmptyMap[K comparable, V any]() Map[K, V] { return Map[K, V]{} }
 // Len returns the number of entries.
 func (m Map[K, V]) Len() int { return len(m.data) }
 
-// IsEmpty reports whether the Map holds no entries.
-func (m Map[K, V]) IsEmpty() bool { return len(m.data) == 0 }
-
 // Get returns the value for key k and true, or the zero V and false if
 // k is absent.
 func (m Map[K, V]) Get(k K) (V, bool) {
@@ -281,7 +278,7 @@ func (m Map[K, V]) String() string {
 // -- JSON. --
 
 // IsZero implements json.IsZeroer, so struct fields of type Map[K, V] can
-// use the `json:",omitzero"` tag option. It is equivalent to IsEmpty.
+// use the `json:",omitzero"` tag option. It is equivalent to Len() == 0.
 func (m Map[K, V]) IsZero() bool { return len(m.data) == 0 }
 
 // MarshalJSON implements json.Marshaler, rendering the Map as a JSON object.

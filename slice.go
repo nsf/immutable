@@ -50,9 +50,6 @@ func EmptySlice[T any]() Slice[T] {
 // Len returns the number of elements.
 func (s Slice[T]) Len() int { return len(s.data) }
 
-// IsEmpty reports whether the Slice holds no elements.
-func (s Slice[T]) IsEmpty() bool { return len(s.data) == 0 }
-
 // Get returns the element at index i and true, or the zero T and false if
 // i is out of range.
 func (s Slice[T]) Get(i int) (T, bool) {
@@ -279,7 +276,7 @@ func (s Slice[T]) String() string {
 // -- JSON. --
 
 // IsZero implements json.IsZeroer, so struct fields of type Slice[T] can
-// use the `json:",omitzero"` tag option. It is equivalent to IsEmpty.
+// use the `json:",omitzero"` tag option. It is equivalent to Len() == 0.
 func (s Slice[T]) IsZero() bool { return len(s.data) == 0 }
 
 // MarshalJSON implements json.Marshaler, rendering the Slice as a JSON
