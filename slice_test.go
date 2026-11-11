@@ -166,8 +166,8 @@ func TestQueries(t *testing.T) {
 	if IndexOf(s, 3) != 2 || IndexOf(s, 9) != -1 {
 		t.Error("IndexOf wrong")
 	}
-	if !s.Any(func(x int) bool { return x == 3 }) || s.All(func(x int) bool { return x > 1 }) {
-		t.Error("Any/All wrong")
+	if !s.Any(func(x int) bool { return x == 3 }) || s.Every(func(x int) bool { return x > 1 }) {
+		t.Error("Any/Every wrong")
 	}
 	if s.IndexOfFunc(func(x int) bool { return x > 2 }) != 2 {
 		t.Error("IndexOfFunc wrong")
@@ -187,22 +187,22 @@ func TestQueries(t *testing.T) {
 func TestRangeIteration(t *testing.T) {
 	s := NewSlice(10, 20, 30)
 	var sum, idxSum int
-	for i, v := range s.Seq2() {
+	for i, v := range s.All() {
 		sum += v
 		idxSum += i
 	}
 	if sum != 60 || idxSum != 3 {
-		t.Errorf("Seq2: sum=%d idxSum=%d", sum, idxSum)
+		t.Errorf("All: sum=%d idxSum=%d", sum, idxSum)
 	}
 	var seen []int
-	for v := range s.Seq() {
+	for _, v := range s.All() {
 		seen = append(seen, v)
 		if v == 20 {
 			break
 		}
 	}
 	if !slices.Equal(seen, []int{10, 20}) {
-		t.Errorf("Seq early break = %v", seen)
+		t.Errorf("All early break = %v", seen)
 	}
 }
 

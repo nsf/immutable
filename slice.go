@@ -82,19 +82,8 @@ func (s Slice[T]) Sub(lo, hi int) Slice[T] {
 // the returned slice and may modify it freely.
 func (s Slice[T]) ToSlice() []T { return slices.Clone(s.data) }
 
-// Seq returns an iterator over the elements, for use with range.
-func (s Slice[T]) Seq() iter.Seq[T] {
-	return func(yield func(T) bool) {
-		for _, v := range s.data {
-			if !yield(v) {
-				return
-			}
-		}
-	}
-}
-
-// Seq2 returns an iterator over index/element pairs, for use with range.
-func (s Slice[T]) Seq2() iter.Seq2[int, T] {
+// All returns an iterator over index/element pairs, for use with range.
+func (s Slice[T]) All() iter.Seq2[int, T] {
 	return func(yield func(int, T) bool) {
 		for i, v := range s.data {
 			if !yield(i, v) {
@@ -265,8 +254,8 @@ func (s Slice[T]) Any(pred func(T) bool) bool {
 	return slices.ContainsFunc(s.data, pred)
 }
 
-// All reports whether every element satisfies pred.
-func (s Slice[T]) All(pred func(T) bool) bool {
+// Every reports whether every element satisfies pred.
+func (s Slice[T]) Every(pred func(T) bool) bool {
 	for _, v := range s.data {
 		if !pred(v) {
 			return false

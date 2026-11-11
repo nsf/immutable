@@ -108,23 +108,12 @@ func (m Map[K, V]) ToMap() map[K]V {
 	return out
 }
 
-// Seq2 returns an iterator over key/value pairs, for use with range.
+// All returns an iterator over key/value pairs, for use with range.
 // Iteration order is unspecified, as for a plain map.
-func (m Map[K, V]) Seq2() iter.Seq2[K, V] {
+func (m Map[K, V]) All() iter.Seq2[K, V] {
 	return func(yield func(K, V) bool) {
 		for k, v := range m.data {
 			if !yield(k, v) {
-				return
-			}
-		}
-	}
-}
-
-// Seq returns an iterator over the values, for use with range.
-func (m Map[K, V]) Seq() iter.Seq[V] {
-	return func(yield func(V) bool) {
-		for _, v := range m.data {
-			if !yield(v) {
 				return
 			}
 		}
@@ -141,8 +130,8 @@ func (m Map[K, V]) Any(pred func(K, V) bool) bool {
 	return false
 }
 
-// All reports whether every entry satisfies pred.
-func (m Map[K, V]) All(pred func(K, V) bool) bool {
+// Every reports whether every entry satisfies pred.
+func (m Map[K, V]) Every(pred func(K, V) bool) bool {
 	for k, v := range m.data {
 		if !pred(k, v) {
 			return false

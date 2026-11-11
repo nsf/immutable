@@ -124,8 +124,8 @@ func TestMapTransformations(t *testing.T) {
 
 func TestMapQueries(t *testing.T) {
 	m := NewMap(PairOf("a", 1), PairOf("b", 2))
-	if !m.Any(func(_ string, v int) bool { return v == 2 }) || m.All(func(_ string, v int) bool { return v > 1 }) {
-		t.Error("Any/All wrong")
+	if !m.Any(func(_ string, v int) bool { return v == 2 }) || m.Every(func(_ string, v int) bool { return v > 1 }) {
+		t.Error("Any/Every wrong")
 	}
 	if !EqualMaps(m, NewMap(PairOf("a", 5), PairOf("b", 6)), func(x, y int) bool { return x < y }) {
 		t.Error("EqualMaps wrong")
@@ -145,18 +145,11 @@ func TestMapRangeIteration(t *testing.T) {
 	m := NewMap(PairOf("a", 1), PairOf("b", 2), PairOf("c", 3))
 	var sum int
 	seen := map[string]bool{}
-	for k, v := range m.Seq2() {
+	for k, v := range m.All() {
 		sum += v
 		seen[k] = true
 	}
 	if sum != 6 || len(seen) != 3 {
-		t.Errorf("Seq2 sum=%d seen=%v", sum, seen)
-	}
-	var vsum int
-	for v := range m.Seq() {
-		vsum += v
-	}
-	if vsum != 6 {
-		t.Errorf("Seq sum = %d", vsum)
+		t.Errorf("All sum=%d seen=%v", sum, seen)
 	}
 }
