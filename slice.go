@@ -188,6 +188,25 @@ func (s Slice[T]) RemoveRange(lo, hi int) Slice[T] {
 	return Slice[T]{data: out}
 }
 
+// MoveElement returns a new Slice with the element at index from moved to
+// index to, shifting the elements in between by one position. The relative
+// order of the other elements is preserved. It panics if from or to are out
+// of range, just like indexing a plain slice.
+func (s Slice[T]) MoveElement(from, to int) Slice[T] {
+	if from == to {
+		return s
+	}
+	out := slices.Clone(s.data)
+	element := out[from]
+	if from < to {
+		copy(out[from:to], out[from+1:to+1])
+	} else {
+		copy(out[to+1:from+1], out[to:from])
+	}
+	out[to] = element
+	return Slice[T]{data: out}
+}
+
 // Reverse returns a new Slice with the elements in reverse order.
 func (s Slice[T]) Reverse() Slice[T] {
 	out := slices.Clone(s.data)

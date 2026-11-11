@@ -80,6 +80,9 @@ func TestMutatingOpsReturnNewInstances(t *testing.T) {
 	if got := s.Concat(NewSlice("d")).String(); got != "[a b c d]" {
 		t.Errorf("Concat = %s", got)
 	}
+	if got := s.MoveElement(0, 2).String(); got != "[b c a]" {
+		t.Errorf("MoveElement = %s", got)
+	}
 	if got := s.Reverse().String(); got != "[c b a]" {
 		t.Errorf("Reverse = %s", got)
 	}
@@ -88,6 +91,34 @@ func TestMutatingOpsReturnNewInstances(t *testing.T) {
 	}
 	// Receiver must be untouched by all of the above.
 	if got := s.String(); got != "[a b c]" {
+		t.Errorf("receiver mutated: %s", got)
+	}
+}
+
+func TestMoveElement(t *testing.T) {
+	s := NewSlice(1, 2, 3, 4, 5)
+
+	cases := []struct {
+		from, to int
+		want     string
+	}{
+		{0, 4, "[2 3 4 5 1]"},
+		{4, 0, "[5 1 2 3 4]"},
+		{1, 3, "[1 3 4 2 5]"},
+		{3, 1, "[1 4 2 3 5]"},
+		{2, 2, "[1 2 3 4 5]"},
+		{0, 1, "[2 1 3 4 5]"},
+		{1, 0, "[2 1 3 4 5]"},
+		{4, 3, "[1 2 3 5 4]"},
+		{3, 4, "[1 2 3 5 4]"},
+	}
+	for _, c := range cases {
+		if got := s.MoveElement(c.from, c.to).String(); got != c.want {
+			t.Errorf("MoveElement(%d, %d) = %s, want %s", c.from, c.to, got, c.want)
+		}
+	}
+	// Receiver must be untouched by all of the above.
+	if got := s.String(); got != "[1 2 3 4 5]" {
 		t.Errorf("receiver mutated: %s", got)
 	}
 }
@@ -186,6 +217,10 @@ func TestPanics(t *testing.T) {
 		func() { s.RemoveRange(-1, 1) },
 		func() { s.RemoveRange(2, 1) },
 		func() { s.Sub(0, 4) },
+		func() { s.MoveElement(3, 0) },
+		func() { s.MoveElement(0, 3) },
+		func() { s.MoveElement(-1, 0) },
+		func() { s.MoveElement(0, -1) },
 	}
 	for i, f := range panics {
 		func() {
