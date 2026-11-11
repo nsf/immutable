@@ -63,11 +63,9 @@ func (s Slice[T]) Get(i int) (T, bool) {
 	return s.data[i], true
 }
 
-// At returns the element at index i. It panics if i is out of range.
+// At returns the element at index i. It panics if i is out of range,
+// just like indexing a plain slice.
 func (s Slice[T]) At(i int) T {
-	if i < 0 || i >= len(s.data) {
-		panic(fmt.Sprintf("immutable: index %d out of range [0, %d)", i, len(s.data)))
-	}
 	return s.data[i]
 }
 
@@ -78,9 +76,8 @@ func (s Slice[T]) First() (T, bool) { return s.Get(0) }
 func (s Slice[T]) Last() (T, bool) { return s.Get(len(s.data) - 1) }
 
 // Sub returns the half-open range [lo, hi) of the Slice as a new Slice.
-// It panics if 0 <= lo <= hi <= Len() does not hold.
+// It panics on invalid indexes, just like slicing a plain slice.
 func (s Slice[T]) Sub(lo, hi int) Slice[T] {
-	checkBounds(lo, hi, len(s.data))
 	return Slice[T]{data: slices.Clone(s.data[lo:hi])}
 }
 
@@ -185,10 +182,10 @@ func (s Slice[T]) RemoveLast() Slice[T] {
 }
 
 // RemoveRange returns a new Slice with the half-open range [lo, hi) removed.
-// It panics if 0 <= lo <= hi <= Len() does not hold.
+// It panics on invalid indexes, just like slicing a plain slice.
 func (s Slice[T]) RemoveRange(lo, hi int) Slice[T] {
-	checkBounds(lo, hi, len(s.data))
-	out := make([]T, 0, len(s.data)-(hi-lo))
+	removed := s.data[lo:hi] // panics exactly like a plain slice expression
+	out := make([]T, 0, len(s.data)-len(removed))
 	out = append(out, s.data[:lo]...)
 	out = append(out, s.data[hi:]...)
 	return Slice[T]{data: out}
@@ -346,10 +343,4 @@ func SortBy[T any, K cmp.Ordered](s Slice[T], key func(T) K) Slice[T] {
 	out := slices.Clone(s.data)
 	slices.SortStableFunc(out, func(a, b T) int { return cmp.Compare(key(a), key(b)) })
 	return Slice[T]{data: out}
-}
-
-func checkBounds(lo, hi, n int) {
-	if lo < 0 || hi > n || lo > hi {
-		panic(fmt.Sprintf("immutable: invalid range [%d, %d) for length %d", lo, hi, n))
-	}
 }
