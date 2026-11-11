@@ -134,9 +134,6 @@ func (s Slice[T]) Concat(other Slice[T]) Slice[T] {
 // Set returns a new Slice with the element at index i replaced by v.
 // It panics if i is out of range.
 func (s Slice[T]) Set(i int, v T) Slice[T] {
-	if i < 0 || i >= len(s.data) {
-		panic(fmt.Sprintf("immutable: index %d out of range [0, %d)", i, len(s.data)))
-	}
 	out := slices.Clone(s.data)
 	out[i] = v
 	return Slice[T]{data: out}
@@ -146,9 +143,6 @@ func (s Slice[T]) Set(i int, v T) Slice[T] {
 // elements right. i may equal Len() to append at the end.
 // It panics if i is outside [0, Len()].
 func (s Slice[T]) Insert(i int, v T) Slice[T] {
-	if i < 0 || i > len(s.data) {
-		panic(fmt.Sprintf("immutable: index %d out of range [0, %d]", i, len(s.data)))
-	}
 	out := make([]T, 0, len(s.data)+1)
 	out = append(out, s.data[:i]...)
 	out = append(out, v)
