@@ -1,0 +1,1 @@
+Immutable wrappers around `[]T` and `map[K]V`. 100% vibe-coded. Optimized for immutability correctness, not performance — great for small data, not for big data. Use something better when scale matters.
