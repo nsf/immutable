@@ -2,6 +2,7 @@ package immutable
 
 import (
 	"cmp"
+	"encoding/json"
 	"fmt"
 	"iter"
 	"maps"
@@ -284,6 +285,47 @@ func (m Map[K, V]) Reduce[U any](init U, f func(U, K, V) U) U {
 // as for a plain map, entry order in the output is unspecified.
 func (m Map[K, V]) String() string {
 	return fmt.Sprintf("%v", m.data)
+}
+
+// -- JSON. --
+
+// IsZero implements json.IsZeroer, so struct fields of type Map[K, V] can
+// use the `json:",omitzero"` tag option. It is equivalent to IsEmpty.
+func (m Map[K, V]) IsZero() bool { return len(m.data) == 0 }
+
+// MarshalJSON implements json.Marshaler, rendering the Map as a JSON object.
+// An empty or zero Map marshals to {} (never null).
+//
+// Key marshaling follows encoding/json's rules for a plain map[K]V: K must
+// be a string, an integer type, or implement encoding.TextMarshaler; other
+// key types (e.g. structs, floats) produce an error at marshal time.
+func (m Map[K, V]) MarshalJSON() ([]byte, error) {
+	if len(m.data) == 0 {
+		return []byte("{}"), nil
+	}
+	b, err := json.Marshal(m.data)
+	if err != nil {
+		return nil, fmt.Errorf("immutable: marshaling Map: %w", err)
+	}
+	return b, nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler, decoding a JSON object into a
+// fresh Map. The decoded map is newly allocated and not shared with any
+// other value. A JSON null decodes to the zero (empty) Map. As for a plain
+// map[K]V, K must be string-like (string, integer type or
+// encoding.TextUnmarshaler); otherwise decoding fails with an error.
+func (m *Map[K, V]) UnmarshalJSON(b []byte) error {
+	if string(b) == "null" {
+		m.data = nil
+		return nil
+	}
+	var out map[K]V
+	if err := json.Unmarshal(b, &out); err != nil {
+		return fmt.Errorf("immutable: unmarshaling Map: %w", err)
+	}
+	m.data = out
+	return nil
 }
 
 // -- Package-level helpers requiring extra constraints. --

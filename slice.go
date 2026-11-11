@@ -17,6 +17,7 @@ package immutable
 
 import (
 	"cmp"
+	"encoding/json"
 	"fmt"
 	"iter"
 	"slices"
@@ -285,6 +286,43 @@ func (s Slice[T]) IndexOfFunc(pred func(T) bool) int {
 // literal. Elements are formatted with %v.
 func (s Slice[T]) String() string {
 	return fmt.Sprintf("%v", s.data)
+}
+
+// -- JSON. --
+
+// IsZero implements json.IsZeroer, so struct fields of type Slice[T] can
+// use the `json:",omitzero"` tag option. It is equivalent to IsEmpty.
+func (s Slice[T]) IsZero() bool { return len(s.data) == 0 }
+
+// MarshalJSON implements json.Marshaler, rendering the Slice as a JSON
+// array. Elements are marshaled with their own JSON representations.
+// An empty or zero Slice marshals to [] (never null), since nil and empty
+// are indistinguishable in this API.
+func (s Slice[T]) MarshalJSON() ([]byte, error) {
+	if len(s.data) == 0 {
+		return []byte("[]"), nil
+	}
+	b, err := json.Marshal(s.data)
+	if err != nil {
+		return nil, fmt.Errorf("immutable: marshaling Slice: %w", err)
+	}
+	return b, nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler, decoding a JSON array into a
+// fresh Slice. The decoded data is newly allocated and not shared with any
+// other value. A JSON null decodes to the zero (empty) Slice.
+func (s *Slice[T]) UnmarshalJSON(b []byte) error {
+	if string(b) == "null" {
+		s.data = nil
+		return nil
+	}
+	var out []T
+	if err := json.Unmarshal(b, &out); err != nil {
+		return fmt.Errorf("immutable: unmarshaling Slice: %w", err)
+	}
+	s.data = slices.Clone(out)
+	return nil
 }
 
 // -- Package-level helpers requiring extra constraints on T. --
